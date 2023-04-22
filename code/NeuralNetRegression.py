@@ -1,23 +1,24 @@
-from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 import utils
-import math
-from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from matplotlib import pyplot as plt
 
-poly_degree = 2
-
 def main():
 
-    poly = PolynomialFeatures(degree=poly_degree, include_bias=False)
+    # Hyperparameters
+    NN = MLPRegressor(
+        activation = 'relu',
+        hidden_layer_sizes = (100,),
+        alpha = 0.001,
+        random_state = 20,
+        early_stopping = False
+    )
 
     # training
     X_train, X_val, X_test, y_train, y_val, y_test = utils.getData("white")
-    poly_features = poly.fit_transform(X_train)
-    LR = LinearRegression()
-    LR.fit(poly_features, y_train)
-    pred = LR.predict(poly_features)
+    NN.fit(X_train, y_train)
+    pred = NN.predict(X_train)
     pred = np.rint(pred)
     y_train = np.rint(np.array(y_train))
     print("Training:")
@@ -26,35 +27,26 @@ def main():
     print("Accuracy: " + str(utils.accuracy(pred, y_train)))
 
     # validation
+    best_model = None
+    epochs = 50
     best_err = 10000000
-    num_batches = 1
-    batch_size = math.floor((len(y_val) / num_batches))
-    for i in range(num_batches):
-
-        X_batch = X_val[i*batch_size:(i+1)*batch_size]
-        y_batch = y_val[i*batch_size:(i+1)*batch_size]
-        
-        poly_features = poly.fit_transform(X_batch)
-        model = LR.fit(poly_features, y_batch)
-        pred = LR.predict(poly_features)
+    for i in range(epochs):
+        model = NN.fit(X_val, y_val)
+        pred = model.predict(X_val)
         pred = np.rint(pred)
-        y_batch = np.rint(np.array(y_batch))
-
-        err = mean_squared_error(y_batch, pred)
+        y_val = np.rint(np.array(y_val))
+        err = mean_squared_error(y_val, pred)
         if err < best_err:
-            best_err = err
             best_model = model
+            best_err = err
 
     # testing
-    poly_features = poly.fit_transform(X_test)
-    pred = best_model.predict(poly_features)
+    pred = best_model.predict(X_test)
     pred = np.rint(pred)
     y_test = np.rint(np.array(y_test))
-    print("Testing")
+    print("Testing:")
     print("Mean squared error: " + str(mean_squared_error(y_test, pred)))
     print("Mean absolute error: " + str(mean_absolute_error(y_test, pred)))
     print("Accuracy: " + str(utils.accuracy(pred, y_test)))
 
 main()
-
-

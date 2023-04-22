@@ -14,14 +14,12 @@ def main():
     pred = LR.predict(X_train)
     pred = np.rint(pred)
     y_train = np.rint(np.array(y_train))
-    weights = LR.coef_
     print("Training:")
     print("Mean squared error: " + str(mean_squared_error(y_train, pred)))
     print("Mean absolute error: " + str(mean_absolute_error(y_train, pred)))
     print("Accuracy: " + str(utils.accuracy(pred, y_train)))
 
     # validation
-    LR = LinearRegression()
     best_err = 10000000
     num_batches = 10
     batch_size = math.floor((len(y_val) / num_batches))
