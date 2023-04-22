@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 def main():
 
     # training
-    X_train, X_val, X_test, y_train, y_val, y_test = utils.getData("white")
+    X_train, X_val, X_test, y_train, y_val, y_test = utils.getData("red")
     LR = LinearRegression()
     LR.fit(X_train, y_train)
     pred = LR.predict(X_train)
@@ -47,6 +47,7 @@ def main():
     print("Mean squared error: " + str(mean_squared_error(y_test, pred)))
     print("Mean absolute error: " + str(mean_absolute_error(y_test, pred)))
     print("Accuracy: " + str(utils.accuracy(pred, y_test)))
+    print("Close Accuracy (+-1 score): " + str(utils.close_accuracy(pred, y_test)))
 
 main()
 

@@ -48,3 +48,11 @@ def accuracy(pred, y_test):
             correct += 1
     acc = correct / len(pred)
     return acc
+
+def close_accuracy(pred, y_test):
+    close = 0
+    for i in range(len(pred)):
+        if (pred[i] == y_test[i]) or (pred[i] + 1 == y_test[i]) or (pred[i] - 1 == y_test[i]):
+            close += 1
+    acc = close / len(pred)
+    return acc
